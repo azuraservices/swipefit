@@ -49,11 +49,11 @@ const LOCAL_STORAGE_KEY = 'fashionApp_savedOutfits';
 const MOCK_ITEMS: Item[] = [
   { id: '1', name: 'White T-Shirt', category: 'tops', image: '/images/whiteshirt.jpeg', price: 19.99, description: 'Classic white tee.' },
   { id: '2', name: 'Black T-Shirt', category: 'tops', image: '/images/blackshirt.jpeg', price: 19.99, description: 'Versatile black tee.' },
-  { id: '3', name: 'Blue Jeans', category: 'bottoms', image: '/images/bluejeans.jpeg', price: 49.99, description: 'Comfortable jeans.' },
-  { id: '4', name: 'Black Jeans', category: 'bottoms', image: '/images/blackjeans.jpeg', price: 49.99, description: 'Sleek black jeans.' },
+  { id: '3', name: 'Blue Jeans', category: 'bottoms', image: '/images/bluejeans.png', price: 49.99, description: 'Comfortable jeans.' },
+  { id: '4', name: 'Black Jeans', category: 'bottoms', image: '/images/blackjeans.png', price: 49.99, description: 'Sleek black jeans.' },
   { id: '5', name: 'Sneakers', category: 'shoes', image: '/images/shoes.jpeg', price: 79.99, description: 'Stylish sneakers.' },
   { id: '6', name: 'Boots', category: 'shoes', image: '/images/boots.jpeg', price: 99.99, description: 'Durable boots.' },
-  { id: '7', name: 'Hat', category: 'accessories', image: '/images/hat.jpeg', price: 24.99, description: 'Trendy hat.' },
+  { id: '7', name: 'Hat', category: 'accessories', image: '/images/hat.png', price: 24.99, description: 'Trendy hat.' },
   { id: '8', name: 'Scarf', category: 'accessories', image: '/images/scarf.jpeg', price: 29.99, description: 'Soft scarf.' },
 ];
 
@@ -224,16 +224,19 @@ export default function FashionApp() {
             const isCurrent = index === currentCategory; // Verifica se è lo step corrente
     
             return (
-              <div key={category} className="flex flex-col items-center">
-                <button
-                  onClick={() => handleProgressClick(index)}
+              <button
+                key={category}
+                onClick={() => handleProgressClick(index)}
+                className="flex flex-col items-center focus:outline-none"
+              >
+                <span
                   className={`text-xs capitalize ${
                     isCurrent ? 'text-primary font-bold' : 'text-muted-foreground'
                   }`}
                 >
                   {category}
-                </button>
-                <div className="relative flex items-center justify-center w-6 h-6 mt-2">
+                </span>
+                <div className="relative flex items-center justify-center w-6 h-6 mt-2 rounded-full">
                   {hasItem ? (
                     // Icona di spunta per step con articoli aggiunti
                     <Check className="text-primary" />
@@ -241,14 +244,16 @@ export default function FashionApp() {
                     // Numero per step senza articoli, con cerchio nero o trasparente
                     <div
                       className={`flex items-center justify-center w-6 h-6 rounded-full ${
-                        isCurrent ? 'bg-black text-white' : 'bg-transparent text-muted-foreground border border-muted'
+                        isCurrent
+                          ? 'bg-black text-white'
+                          : 'bg-transparent text-muted-foreground border border-muted'
                       }`}
                     >
                       <span className="text-xs">{index + 1}</span>
                     </div>
                   )}
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>
