@@ -1,9 +1,10 @@
-// next.config.ts
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  images: {
-    domains: ['picsum.photos'],
-  },
-};
+// next.config.js
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+});
 
-module.exports = nextConfig;
+module.exports = withPWA({
+  // Altre configurazioni Next.js qui
+});

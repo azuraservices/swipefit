@@ -235,30 +235,31 @@ export default function FashionApp() {
                 onClick={() => handleProgressClick(index)}
                 className="flex flex-col items-center focus:outline-none"
               >
-                <span
-                  className={`text-xs capitalize ${
-                    isCurrent ? 'text-primary font-bold' : 'text-muted-foreground'
-                  }`}
-                >
-                  {category}
-                </span>
-                <div className="relative flex items-center justify-center w-6 h-6 mt-2 rounded-full">
+                
+                <div className="relative flex items-center justify-center w-4 h-4 mt-2 rounded-full">
                   {hasItem ? (
                     // Icona di spunta per step con articoli aggiunti
                     <Check className="text-primary" />
                   ) : (
                     // Numero per step senza articoli, con cerchio nero o trasparente
                     <div
-                      className={`flex items-center justify-center w-6 h-6 rounded-full ${
+                      className={`flex items-center justify-center w-4 h-4 rounded-full ${
                         isCurrent
                           ? 'bg-black text-white'
                           : 'bg-transparent text-muted-foreground border border-muted'
                       }`}
                     >
-                      <span className="text-xs">{index + 1}</span>
+                      <span style={{ fontSize: '0.525rem' }}>{index + 1}</span>
                     </div>
                   )}
                 </div>
+                <span
+                  className={`text-xs capitalize pt-1 ${
+                    isCurrent ? 'text-primary font-bold' : 'text-muted-foreground'
+                  }`}
+                >
+                  {category}
+                </span>
               </button>
             );
           })}
@@ -326,7 +327,7 @@ export default function FashionApp() {
 
   return (
     <div className="container mx-auto p-2 pb-32">
-      <h1 className="text-4xl font-black mt-1 mb-3 text-center">SwipeFit</h1>
+      <h1 className="text-4xl font-black mt-1 mb-1 text-center">SwipeFit</h1>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="hidden">
