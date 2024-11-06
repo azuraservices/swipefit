@@ -121,10 +121,8 @@ export default function FashionApp() {
   const [outfitName, setOutfitName] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('browse');
-  const [isSwiping, setIsSwiping] = useState(false);
-  const [overlayClass, setOverlayClass] = useState(''); // Nuova classe per il feedback di colore
-
-  const cardRef = useRef<any>(null);
+  const overlayRef = useRef<HTMLDivElement>(null); // Referenza per l'overlay
+  const cardRef = useRef<any>(null); // Referenza per la carta
 
   useEffect(() => {
     const saved = localStorage.getItem('savedOutfits');
@@ -135,9 +133,7 @@ export default function FashionApp() {
   }, [currentCategory]);
 
   const resetCurrentItems = () => {
-    setCurrentItems(
-      mockItems.filter((item) => item.category === categories[currentCategory])
-    );
+    setCurrentItems(mockItems.filter((item) => item.category === categories[currentCategory]));
   };
 
   const addToOutfit = (item: Item) => {
@@ -199,30 +195,28 @@ export default function FashionApp() {
   };
 
   const onSwipe = (direction: 'left' | 'right' | 'up' | 'down') => {
-    if (direction === 'left' || direction === 'right') {
-      setIsSwiping(true);
-
+    if (overlayRef.current) {
+      overlayRef.current.style.backgroundColor = ''; // Reset del colore
       if (direction === 'right') {
+        overlayRef.current.classList.add('fade-out'); // Aggiungi la classe di dissolvenza
         addToOutfit(currentItems[0]);
       }
-
       setTimeout(() => {
-        setCurrentItems((prev) => [...prev.slice(1), prev[0]]);
-        setIsSwiping(false);
-        setOverlayClass('');
+        setCurrentItems((prev) => [...prev.slice(1)]);
+        if (overlayRef.current) overlayRef.current.classList.remove('fade-out'); // Rimuovi la classe dopo il timeout
       }, 300);
-    } else {
-      setCurrentItems((prev) => [...prev.slice(1), prev[0]]);
     }
   };
 
   const handleSwipeRequirementFulfilled = (direction: 'left' | 'right' | 'up' | 'down') => {
-    if (direction === 'left') {
-      setOverlayClass('bg-red-500');
-    } else if (direction === 'right') {
-      setOverlayClass('bg-green-500');
-    } else {
-      setOverlayClass('');
+    if (overlayRef.current) {
+      if (direction === 'left') {
+        overlayRef.current.style.backgroundColor = 'rgba(255, 0, 0, 0.5)'; // Rosso per non scelto
+      } else if (direction === 'right') {
+        overlayRef.current.style.backgroundColor = 'rgba(0, 255, 0, 0.5)'; // Verde per scelto
+      } else {
+        overlayRef.current.style.backgroundColor = '';
+      }
     }
   };
 
@@ -240,24 +234,16 @@ export default function FashionApp() {
               {currentItems.length > 0 && (
                 <TinderCard
                   key={currentItems[0]?.id}
-                  ref={cardRef}
                   onSwipe={onSwipe}
                   onSwipeRequirementFulfilled={handleSwipeRequirementFulfilled}
-                  onCardLeftScreen={() => setOverlayClass('')}
+                  onCardLeftScreen={() => {
+                    if (overlayRef.current) overlayRef.current.style.backgroundColor = '';
+                  }}
                   swipeRequirementType="position"
                   swipeThreshold={100}
                 >
-                  <Card
-                    className={`w-64 h-80 flex flex-col justify-between relative transition-all duration-300 ${
-                      isSwiping ? 'opacity-0 transform scale-90' : 'opacity-100'
-                    }`}
-                  >
-                    {overlayClass && (
-                      <div
-                        className={`absolute inset-0 flex items-center justify-center rounded-lg bg-opacity-50 transition-opacity duration-300 ${overlayClass}`}
-                      />
-                    )}
-
+                  <Card className="w-64 h-80 flex flex-col justify-between relative transition-all duration-300">
+                    <div ref={overlayRef} className="absolute inset-0 bg-transparent rounded-lg transition-all duration-300" />
                     <CardContent className="p-4">
                       <div className="relative w-full h-48 mb-2 flex items-center justify-center overflow-hidden">
                         <Image
@@ -280,10 +266,10 @@ export default function FashionApp() {
               )}
             </CardContent>
             <CardFooter className="flex justify-center gap-4">
-              <Button onClick={() => cardRef.current.swipe('left')} variant="outline">
+              <Button onClick={() => cardRef.current?.swipe('left')} variant="outline">
                 <X className="mr-2 h-4 w-4" /> Dislike
               </Button>
-              <Button onClick={() => cardRef.current.swipe('right')}>
+              <Button onClick={() => cardRef.current?.swipe('right')}>
                 <Check className="mr-2 h-4 w-4" /> Like
               </Button>
             </CardFooter>
