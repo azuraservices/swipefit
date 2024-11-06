@@ -197,16 +197,18 @@ export default function FashionApp() {
       .toFixed(2);
   };
 
-  const onSwipe = (direction: 'left' | 'right') => {
-    setSwipeDirection(direction);
-
-    if (direction === 'right') {
-      addToOutfit(currentItems[0]);
-    } else {
-      setCurrentItems((prev) => [...prev.slice(1), prev[0]]);
+  const onSwipe = (direction: 'left' | 'right' | 'up' | 'down') => {
+    if (direction === 'left' || direction === 'right') {
+      setSwipeDirection(direction);
+  
+      if (direction === 'right') {
+        addToOutfit(currentItems[0]);
+      } else {
+        setCurrentItems((prev) => [...prev.slice(1), prev[0]]);
+      }
+  
+      setTimeout(() => setSwipeDirection(null), 800);
     }
-
-    setTimeout(() => setSwipeDirection(null), 800);
   };
 
   return (
