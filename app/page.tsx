@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Dialog,
@@ -27,6 +27,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Search, Shirt, BookMarked, X, Check } from 'lucide-react';
 
+// Types
 type Item = {
   id: string;
   name: string;
@@ -36,7 +37,14 @@ type Item = {
   description: string;
 };
 
-const mockItems: Item[] = [
+type OutfitItems = { [key: string]: Item | null };
+type SavedOutfit = { name: string; items: OutfitItems };
+
+// Constants
+const CATEGORIES = ['accessories', 'tops', 'bottoms', 'shoes'] as const;
+const LOCAL_STORAGE_KEY = 'fashionApp_savedOutfits';
+
+const MOCK_ITEMS: Item[] = [
   { id: '1', name: 'White T-Shirt', category: 'tops', image: 'https://picsum.photos/200', price: 19.99, description: 'Classic white tee.' },
   { id: '2', name: 'Black T-Shirt', category: 'tops', image: 'https://picsum.photos/200', price: 19.99, description: 'Versatile black tee.' },
   { id: '3', name: 'Blue Jeans', category: 'bottoms', image: 'https://picsum.photos/200', price: 49.99, description: 'Comfortable jeans.' },
@@ -47,34 +55,48 @@ const mockItems: Item[] = [
   { id: '8', name: 'Scarf', category: 'accessories', image: 'https://picsum.photos/200', price: 29.99, description: 'Soft scarf.' },
 ];
 
-const categories = ['accessories', 'tops', 'bottoms', 'shoes'];
-
 export default function FashionApp() {
+  // State
   const [currentCategory, setCurrentCategory] = useState(0);
   const [currentItems, setCurrentItems] = useState<Item[]>([]);
-  const [outfit, setOutfit] = useState<{ [key: string]: Item | null }>({
+  const [outfit, setOutfit] = useState<OutfitItems>({
     accessories: null,
     tops: null,
     bottoms: null,
     shoes: null,
   });
-  const [savedOutfits, setSavedOutfits] = useState<{ name: string; items: { [key: string]: Item | null } }[]>([]);
+  const [savedOutfits, setSavedOutfits] = useState<SavedOutfit[]>([]);
   const [outfitName, setOutfitName] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('browse');
+
+  // Refs
   const overlayRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<any>(null);
 
+  // Effects
   useEffect(() => {
-    const saved = localStorage.getItem('savedOutfits');
-    if (saved) {
-      setSavedOutfits(JSON.parse(saved));
-    }
+    loadSavedOutfits();
     resetCurrentItems();
   }, [currentCategory]);
 
+  // Helper Functions
+  const loadSavedOutfits = () => {
+    try {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (saved) {
+        setSavedOutfits(JSON.parse(saved));
+      }
+    } catch (error) {
+      console.error('Error loading saved outfits:', error);
+      toast.error('Failed to load saved outfits');
+    }
+  };
+
   const resetCurrentItems = () => {
-    setCurrentItems(mockItems.filter((item) => item.category === categories[currentCategory]));
+    setCurrentItems(
+      MOCK_ITEMS.filter((item) => item.category === CATEGORIES[currentCategory])
+    );
   };
 
   const addToOutfit = (item: Item) => {
@@ -89,7 +111,7 @@ export default function FashionApp() {
   };
 
   const moveToNextCategory = () => {
-    if (currentCategory < categories.length - 1) {
+    if (currentCategory < CATEGORIES.length - 1) {
       setCurrentCategory((prev) => prev + 1);
     } else {
       toast.info("You've completed your outfit!");
@@ -106,26 +128,37 @@ export default function FashionApp() {
       toast.error('Please enter a name for your outfit.');
       return;
     }
-    const newOutfit = { name: outfitName, items: outfit };
-    const newSavedOutfits = [...savedOutfits, newOutfit];
-    setSavedOutfits(newSavedOutfits);
-    localStorage.setItem('savedOutfits', JSON.stringify(newSavedOutfits));
-    setOutfitName('');
-    setIsDialogOpen(false);
-    toast.success('Outfit saved successfully!');
+
+    try {
+      const newOutfit = { name: outfitName, items: outfit };
+      const newSavedOutfits = [...savedOutfits, newOutfit];
+      setSavedOutfits(newSavedOutfits);
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newSavedOutfits));
+      setOutfitName('');
+      setIsDialogOpen(false);
+      toast.success('Outfit saved successfully!');
+    } catch (error) {
+      console.error('Error saving outfit:', error);
+      toast.error('Failed to save outfit');
+    }
   };
 
-  const loadOutfit = (savedOutfit: { name: string; items: { [key: string]: Item | null } }) => {
+  const loadOutfit = (savedOutfit: SavedOutfit) => {
     setOutfit(savedOutfit.items);
     setActiveTab('visualizer');
     toast.info(`Loaded outfit: ${savedOutfit.name}`);
   };
 
   const deleteOutfit = (index: number) => {
-    const newSavedOutfits = savedOutfits.filter((_, i) => i !== index);
-    setSavedOutfits(newSavedOutfits);
-    localStorage.setItem('savedOutfits', JSON.stringify(newSavedOutfits));
-    toast.success('Outfit deleted successfully!');
+    try {
+      const newSavedOutfits = savedOutfits.filter((_, i) => i !== index);
+      setSavedOutfits(newSavedOutfits);
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newSavedOutfits));
+      toast.success('Outfit deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting outfit:', error);
+      toast.error('Failed to delete outfit');
+    }
   };
 
   const calculateTotalPrice = () => {
@@ -135,81 +168,140 @@ export default function FashionApp() {
       .toFixed(2);
   };
 
-  const onSwipe = (direction: 'left' | 'right' | 'up' | 'down') => {
-    if (overlayRef.current) overlayRef.current.style.backgroundColor = 'transparent'; // Rimuove il colore dell'overlay senza influenzare il contenuto
-
-    if (direction === 'right') {
+  // Card Swipe Handlers
+  const handleSwipe = (direction: string) => {
+    // Reset overlay color
+    if (overlayRef.current) {
+      overlayRef.current.style.backgroundColor = 'transparent';
+    }
+  
+    if (direction === 'right' && currentItems.length > 0) {
       addToOutfit(currentItems[0]);
       setCurrentItems((prev) => prev.slice(1));
-    } else if (direction === 'left') {
-      setCurrentItems((prev) => [...prev.slice(1), prev[0]]); // Riposiziona la carta alla fine per un ciclo infinito
+    } else if (direction === 'left' && currentItems.length > 0) {
+      setCurrentItems((prev) => [...prev.slice(1), prev[0]]);
+    }
+  };
+  
+  const handleSwipeRequirementFulfilled = (direction: string) => {
+    if (overlayRef.current) {
+      const overlayColor = direction === 'left' 
+        ? 'rgba(255, 0, 0, 0.2)'
+        : direction === 'right'
+          ? 'rgba(0, 255, 0, 0.2)'
+          : 'transparent';
+      overlayRef.current.style.backgroundColor = overlayColor;
     }
   };
 
-  const handleSwipeRequirementFulfilled = (direction: 'left' | 'right' | 'up' | 'down') => {
+  const handleSwipeRequirementUnfulfilled = () => {
     if (overlayRef.current) {
-      if (direction === 'left') {
-        overlayRef.current.style.backgroundColor = 'rgba(255, 0, 0, 0.5)'; // Rosso per non scelto
-      } else if (direction === 'right') {
-        overlayRef.current.style.backgroundColor = 'rgba(0, 255, 0, 0.5)'; // Verde per scelto
-      } else {
-        overlayRef.current.style.backgroundColor = 'transparent'; // Ritorna trasparente quando centrato
-      }
+      overlayRef.current.style.backgroundColor = 'transparent';
     }
   };
+  
+  const handleCardLeftScreen = () => {
+    if (overlayRef.current) {
+      overlayRef.current.style.backgroundColor = 'transparent';
+    }
+  };
+
+  // Render Functions
+  const renderItemCard = (item: Item) => (
+    <Card className="w-64 h-80 flex flex-col justify-between relative">
+      <div 
+        ref={overlayRef} 
+        className="absolute inset-0 bg-transparent rounded-lg transition-all duration-300" 
+      />
+      <CardContent className="p-4">
+        <div className="relative w-full h-48 mb-2 flex items-center justify-center overflow-hidden">
+          <Image
+            src={item.image}
+            alt={item.name}
+            width={200}
+            height={200}
+            className="rounded-lg object-cover"
+          />
+        </div>
+        <p className="text-center font-semibold">{item.name}</p>
+        <p className="text-center text-sm text-gray-500 mb-2">
+          ${item.price.toFixed(2)}
+        </p>
+        <p className="text-center text-xs text-gray-600">{item.description}</p>
+      </CardContent>
+    </Card>
+  );
+
+  const renderOutfitItem = (category: string) => (
+    <div key={category} className="relative w-full h-[300px]">
+      {outfit[category] ? (
+        <>
+          <Image
+            src={outfit[category]?.image ?? ''}
+            alt={outfit[category]?.name ?? 'Outfit item'}
+            layout="fill"
+            objectFit="contain"
+            className="rounded-lg"
+          />
+          <Button
+            variant="destructive"
+            size="sm"
+            className="absolute top-2 right-2"
+            onClick={() => removeFromOutfit(category)}
+          >
+            Remove
+          </Button>
+        </>
+      ) : (
+        <div className="w-full h-full border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-500">
+          No {category} selected
+        </div>
+      )}
+    </div>
+  );
 
   return (
-    <div className="container mx-auto p-2 pb-10">
+    <div className="container mx-auto p-2 pb-16">
       <h1 className="text-3xl font-bold mb-6 text-center">Outfit Builder</h1>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="hidden">
+          <TabsTrigger value="browse">Browse</TabsTrigger>
+          <TabsTrigger value="visualizer">Visualizer</TabsTrigger>
+          <TabsTrigger value="saved">Saved</TabsTrigger>
+        </TabsList>
+
         <TabsContent value="browse">
           <Card className="border-0 shadow-none">
             <CardHeader>
-              <CardTitle>Choose your {categories[currentCategory]}</CardTitle>
+              <CardTitle>Choose your {CATEGORIES[currentCategory]}</CardTitle>
             </CardHeader>
             <CardContent className="flex justify-center items-center h-[60vh] relative">
-              {currentItems.length > 0 && (
+                {currentItems.length > 0 && (
                 <TinderCard
-                  key={currentItems[0]?.id}
+                  key={currentItems[0].id}
                   ref={cardRef}
-                  onSwipe={onSwipe}
+                  onSwipe={handleSwipe}
                   onSwipeRequirementFulfilled={handleSwipeRequirementFulfilled}
-                  onCardLeftScreen={() => {
-                    if (overlayRef.current) overlayRef.current.style.backgroundColor = 'transparent'; // Reset colore
-                  }}
+                  onSwipeRequirementUnfulfilled={handleSwipeRequirementUnfulfilled}
+                  onCardLeftScreen={handleCardLeftScreen}
+                  preventSwipe={['up', 'down']}
                   swipeRequirementType="position"
                   swipeThreshold={100}
                 >
-                  <Card className="w-64 h-80 flex flex-col justify-between relative transition-all duration-300">
-                    <div ref={overlayRef} className="absolute inset-0 bg-transparent rounded-lg transition-all duration-300" />
-                    <CardContent className="p-4">
-                      <div className="relative w-full h-48 mb-2 flex items-center justify-center overflow-hidden">
-                        <Image
-                          src={currentItems[0].image}
-                          alt={currentItems[0].name}
-                          width={200}
-                          height={200}
-                          objectFit="cover"
-                          className="rounded-lg"
-                        />
-                      </div>
-                      <p className="text-center font-semibold">{currentItems[0].name}</p>
-                      <p className="text-center text-sm text-gray-500 mb-2">
-                        ${currentItems[0].price.toFixed(2)}
-                      </p>
-                      <p className="text-center text-xs text-gray-600">{currentItems[0].description}</p>
-                    </CardContent>
-                  </Card>
+                  {renderItemCard(currentItems[0])}
                 </TinderCard>
               )}
             </CardContent>
             <CardFooter className="flex justify-center gap-4">
-              <Button onClick={() => cardRef.current?.swipe('left')} variant="outline">
-                <X className="mr-2 h-4 w-4" /> Dislike
+              <Button 
+                onClick={() => cardRef.current?.swipe('left')} 
+                variant="outline"
+              >
+                <X className="mr-2 h-4 w-4" /> Skip
               </Button>
               <Button onClick={() => cardRef.current?.swipe('right')}>
-                <Check className="mr-2 h-4 w-4" /> Like
+                <Check className="mr-2 h-4 w-4" /> Add to Outfit
               </Button>
             </CardFooter>
           </Card>
@@ -221,33 +313,7 @@ export default function FashionApp() {
               <CardTitle>Outfit Visualizer</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center gap-4">
-              {categories.map((category) => (
-                <div key={category} className="relative w-full h-[300px]">
-                  {outfit[category] ? (
-                    <>
-                      <Image
-                        src={outfit[category]?.image ?? ''}
-                        alt={outfit[category]?.name ?? 'Outfit item'}
-                        layout="fill"
-                        objectFit="contain"
-                        className="rounded-lg"
-                      />
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        className="absolute top-2 right-2"
-                        onClick={() => removeFromOutfit(category)}
-                      >
-                        Remove
-                      </Button>
-                    </>
-                  ) : (
-                    <div className="w-full h-full border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-500">
-                      No {category} selected
-                    </div>
-                  )}
-                </div>
-              ))}
+              {CATEGORIES.map(renderOutfitItem)}
             </CardContent>
             <CardFooter className="flex justify-between">
               <p className="text-lg font-semibold">
