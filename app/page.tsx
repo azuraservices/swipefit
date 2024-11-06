@@ -26,6 +26,7 @@ import { Input } from '@/components/ui/input';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Search, Shirt, BookMarked, X, Check } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 
 
 // Types
@@ -207,7 +208,54 @@ export default function FashionApp() {
     }
   };
 
-  // Render Functions
+  // Progress Bar Functions
+  const handleProgressClick = (index: number) => {
+    if (activeTab === 'browse') {
+      setCurrentCategory(index);
+    }
+  };
+
+    // Updated renderProgressSteps function
+    const renderProgressSteps = () => (
+      <div className="fixed bottom-16 left-0 right-0 bg-background border-t px-4 py-2">
+        <div className="flex justify-between mb-2">
+          {CATEGORIES.map((category, index) => {
+            const hasItem = !!outfit[category]; // Verifica se un articolo è stato aggiunto per la categoria
+            const isCurrent = index === currentCategory; // Verifica se è lo step corrente
+    
+            return (
+              <div key={category} className="flex flex-col items-center">
+                <button
+                  onClick={() => handleProgressClick(index)}
+                  className={`text-xs capitalize ${
+                    isCurrent ? 'text-primary font-bold' : 'text-muted-foreground'
+                  }`}
+                >
+                  {category}
+                </button>
+                <div className="relative flex items-center justify-center w-6 h-6 mt-2">
+                  {hasItem ? (
+                    // Icona di spunta per step con articoli aggiunti
+                    <Check className="text-primary" />
+                  ) : (
+                    // Numero per step senza articoli, con cerchio nero o trasparente
+                    <div
+                      className={`flex items-center justify-center w-6 h-6 rounded-full ${
+                        isCurrent ? 'bg-black text-white' : 'bg-transparent text-muted-foreground border border-muted'
+                      }`}
+                    >
+                      <span className="text-xs">{index + 1}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  
+
   const renderItemCard = (item: Item) => (
     <Card className="w-64 h-80 flex flex-col justify-between relative">
       <div 
@@ -262,7 +310,7 @@ export default function FashionApp() {
   );
 
   return (
-    <div className="container mx-auto p-2 pb-16">
+    <div className="container mx-auto p-2 pb-32">
       <h1 className="text-4xl font-bold mb-2 text-center">SwipeFit</h1>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -309,7 +357,7 @@ export default function FashionApp() {
         </TabsContent>
 
         <TabsContent value="visualizer">
-          <Card className="border-0">
+          <Card className="border-0 shadow-none">
             <CardHeader>
               <CardTitle>Outfit Visualizer</CardTitle>
             </CardHeader>
@@ -352,7 +400,7 @@ export default function FashionApp() {
         </TabsContent>
 
         <TabsContent value="saved">
-          <Card className="border-0">
+          <Card className="border-0 shadow-none">
             <CardHeader>
               <CardTitle>Saved Outfits</CardTitle>
             </CardHeader>
@@ -404,6 +452,8 @@ export default function FashionApp() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {activeTab === 'browse' && renderProgressSteps()}
 
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t">
         <div className="container mx-auto">
