@@ -121,8 +121,8 @@ export default function FashionApp() {
   const [outfitName, setOutfitName] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('browse');
-  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
-  const [isSwiping, setIsSwiping] = useState(false); // Stato per la transizione
+  const [isSwiping, setIsSwiping] = useState(false);
+  const [overlayClass, setOverlayClass] = useState(''); // Nuova classe per il feedback di colore
 
   const cardRef = useRef<any>(null);
 
@@ -200,8 +200,7 @@ export default function FashionApp() {
 
   const onSwipe = (direction: 'left' | 'right' | 'up' | 'down') => {
     if (direction === 'left' || direction === 'right') {
-      setSwipeDirection(direction);
-      setIsSwiping(true); // Imposta lo stato di transizione
+      setIsSwiping(true);
 
       if (direction === 'right') {
         addToOutfit(currentItems[0]);
@@ -209,11 +208,21 @@ export default function FashionApp() {
 
       setTimeout(() => {
         setCurrentItems((prev) => [...prev.slice(1), prev[0]]);
-        setSwipeDirection(null);
-        setIsSwiping(false); // Ripristina lo stato per la prossima carta
-      }, 300); // Tempo della transizione
+        setIsSwiping(false);
+        setOverlayClass('');
+      }, 300);
     } else {
       setCurrentItems((prev) => [...prev.slice(1), prev[0]]);
+    }
+  };
+
+  const handleSwipeRequirementFulfilled = (direction: 'left' | 'right' | 'up' | 'down') => {
+    if (direction === 'left') {
+      setOverlayClass('bg-red-500');
+    } else if (direction === 'right') {
+      setOverlayClass('bg-green-500');
+    } else {
+      setOverlayClass('');
     }
   };
 
@@ -223,7 +232,7 @@ export default function FashionApp() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsContent value="browse">
-          <Card className='border-0 shadow-none'>
+          <Card className="border-0 shadow-none">
             <CardHeader>
               <CardTitle>Browse Items - {categories[currentCategory]}</CardTitle>
             </CardHeader>
@@ -233,6 +242,8 @@ export default function FashionApp() {
                   key={currentItems[0]?.id}
                   ref={cardRef}
                   onSwipe={onSwipe}
+                  onSwipeRequirementFulfilled={handleSwipeRequirementFulfilled}
+                  onCardLeftScreen={() => setOverlayClass('')}
                   swipeRequirementType="position"
                   swipeThreshold={100}
                 >
@@ -241,18 +252,10 @@ export default function FashionApp() {
                       isSwiping ? 'opacity-0 transform scale-90' : 'opacity-100'
                     }`}
                   >
-                    {swipeDirection && (
+                    {overlayClass && (
                       <div
-                        className={`absolute inset-0 flex items-center justify-center rounded-lg bg-opacity-50 transition-opacity duration-300 ${
-                          swipeDirection === 'right' ? 'bg-green-500' : 'bg-red-500'
-                        }`}
-                      >
-                        {swipeDirection === 'right' ? (
-                          <Check className="text-white h-12 w-12" />
-                        ) : (
-                          <X className="text-white h-12 w-12" />
-                        )}
-                      </div>
+                        className={`absolute inset-0 flex items-center justify-center rounded-lg bg-opacity-50 transition-opacity duration-300 ${overlayClass}`}
+                      />
                     )}
 
                     <CardContent className="p-4">
@@ -288,7 +291,7 @@ export default function FashionApp() {
         </TabsContent>
 
         <TabsContent value="visualizer">
-          <Card className='border-0'>
+          <Card className="border-0">
             <CardHeader>
               <CardTitle>Outfit Visualizer</CardTitle>
             </CardHeader>
@@ -357,7 +360,7 @@ export default function FashionApp() {
         </TabsContent>
 
         <TabsContent value="saved">
-          <Card className='border-0'>
+          <Card className="border-0">
             <CardHeader>
               <CardTitle>Saved Outfits</CardTitle>
             </CardHeader>
