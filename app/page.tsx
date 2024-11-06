@@ -28,8 +28,19 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Search, Shirt, BookMarked, ShoppingBag, X, Check } from 'lucide-react';
 
+// Definisci il tipo Item per i tuoi oggetti di moda
+type Item = {
+  id: string;
+  name: string;
+  category: string;
+  image: string;
+  price: number;
+  description: string;
+};
+
+
 // Mock data for fashion items with sample images
-const mockItems = [
+const mockItems: Item[]  = [
   {
     id: '1',
     name: 'White T-Shirt',
@@ -100,7 +111,7 @@ const categories = ['accessories', 'tops', 'bottoms', 'shoes'];
 
 export default function FashionApp() {
   const [currentCategory, setCurrentCategory] = useState(0);
-  const [currentItems, setCurrentItems] = useState([]);
+  const [currentItems, setCurrentItems] = useState<Item[]>([]); // Aggiunta del tipo Item[]
   const [outfit, setOutfit] = useState({
     accessories: null,
     tops: null,
