@@ -300,7 +300,7 @@ export default function FashionApp() {
           <Button
             variant="destructive"
             size="sm"
-            className="absolute top-2 right-2"
+            className="absolute bottom-4 left-1/2 transform -translate-x-1/2"
             onClick={() => removeFromOutfit(category)}
           >
             Remove
@@ -316,7 +316,7 @@ export default function FashionApp() {
 
   return (
     <div className="container mx-auto p-2 pb-32">
-      <h1 className="text-4xl font-bold mb-2 text-center">SwipeFit</h1>
+      <h1 className="text-4xl font-black mb-2 text-center">SwipeFit</h1>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="hidden">
@@ -364,14 +364,14 @@ export default function FashionApp() {
         <TabsContent value="visualizer">
           <Card className="border-0 shadow-none">
             <CardHeader>
-              <CardTitle>Outfit Visualizer</CardTitle>
+              <CardTitle className="text-center">Outfit Visualizer</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center gap-4">
               {CATEGORIES.map(renderOutfitItem)}
             </CardContent>
             <CardFooter className="flex justify-between">
               <p className="text-lg font-semibold">
-                Total: ${calculateTotalPrice()}
+                Total: €{calculateTotalPrice()}
               </p>
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
@@ -407,10 +407,10 @@ export default function FashionApp() {
         <TabsContent value="saved">
           <Card className="border-0 shadow-none">
             <CardHeader>
-              <CardTitle>Saved Outfits</CardTitle>
+              <CardTitle className="text-center">Saved Outfits</CardTitle>
             </CardHeader>
             <CardContent>
-              <ScrollArea className="h-[calc(100vh-300px)] w-full rounded-md border p-4">
+              <ScrollArea className="h-[calc(100vh-300px)] w-full rounded-md border p-4 border-0 shadow-none">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {savedOutfits.map((savedOutfit, index) => (
                     <Card key={index}>
@@ -479,7 +479,7 @@ export default function FashionApp() {
         </div>
       </div>
 
-      <ToastContainer position="bottom-right" />
+      <ToastContainer position="bottom-right" autoClose={1500} closeOnClick/>
     </div>
   );
 }
