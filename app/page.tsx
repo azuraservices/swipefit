@@ -159,14 +159,14 @@ export default function FashionApp() {
   };
 
   return (
-    <div className="container mx-auto p-4 pb-20">
-      <h1 className="text-3xl font-bold mb-6 text-center">Fashion Outfit Builder</h1>
+    <div className="container mx-auto p-2 pb-10">
+      <h1 className="text-3xl font-bold mb-6 text-center">Outfit Builder</h1>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsContent value="browse">
           <Card className="border-0 shadow-none">
             <CardHeader>
-              <CardTitle>Browse Items - {categories[currentCategory]}</CardTitle>
+              <CardTitle>Choose your {categories[currentCategory]}</CardTitle>
             </CardHeader>
             <CardContent className="flex justify-center items-center h-[60vh] relative">
               {currentItems.length > 0 && (
