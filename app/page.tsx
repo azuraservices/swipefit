@@ -228,7 +228,7 @@ export default function FashionApp() {
         <TabsContent value="browse">
           <Card className="border-0 shadow-none">
             <CardHeader>
-              <CardTitle>Browse Items - {categories[currentCategory]}</CardTitle>
+              <CardTitle>Browsing: {categories[currentCategory]}</CardTitle>
             </CardHeader>
             <CardContent className="flex justify-center items-center h-[60vh] relative">
               {currentItems.length > 0 && (
