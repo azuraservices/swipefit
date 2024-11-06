@@ -219,7 +219,7 @@ export default function FashionApp() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsContent value="browse">
-        <Card>
+        <Card className='border-0'>
           <CardHeader>
             <CardTitle>Browse Items - {categories[currentCategory]}</CardTitle>
           </CardHeader>
@@ -278,7 +278,7 @@ export default function FashionApp() {
         </TabsContent>
 
         <TabsContent value="visualizer">
-          <Card>
+          <Card className='border-0'>
             <CardHeader>
               <CardTitle>Outfit Visualizer</CardTitle>
             </CardHeader>
@@ -347,7 +347,7 @@ export default function FashionApp() {
         </TabsContent>
 
         <TabsContent value="saved">
-          <Card>
+          <Card className='border-0'>
             <CardHeader>
               <CardTitle>Saved Outfits</CardTitle>
             </CardHeader>
