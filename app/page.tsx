@@ -78,7 +78,7 @@ export default function FashionApp() {
   const overlayRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<any>(null);
 
-  // Effects
+  // Load saved outfits and reset items on category change
   useEffect(() => {
     loadSavedOutfits();
     resetCurrentItems();
@@ -187,8 +187,8 @@ export default function FashionApp() {
       setFadingOut(false);
       setFadingIn(true);
   
-      setTimeout(() => setFadingIn(false), 300); // Attesa di 300ms per dissolvenza entrante
-    }, 300); // Attesa per la dissolvenza uscente
+      setTimeout(() => setFadingIn(false), 300); // Wait 300ms for fade-in
+    }, 300); // Wait for fade-out
   };
   
   const handleSwipeRequirementFulfilled = (direction: string) => {
@@ -221,81 +221,77 @@ export default function FashionApp() {
     }
   };
 
-    // Updated renderProgressSteps function
-    const renderProgressSteps = () => (
-      <div className="fixed bottom-16 left-0 right-0 bg-background border-t px-4 py-2">
-        <div className="flex justify-between mb-2">
-          {CATEGORIES.map((category, index) => {
-            const hasItem = !!outfit[category]; // Verifica se un articolo è stato aggiunto per la categoria
-            const isCurrent = index === currentCategory; // Verifica se è lo step corrente
-    
-            return (
-              <button
-                key={category}
-                onClick={() => handleProgressClick(index)}
-                className="flex flex-col items-center focus:outline-none"
+  const renderProgressSteps = () => (
+    <div className="fixed bottom-16 left-0 right-0 bg-background border-t px-4 py-2">
+      <div className="flex justify-between mb-2">
+        {CATEGORIES.map((category, index) => {
+          const hasItem = !!outfit[category];
+          const isCurrent = index === currentCategory;
+
+          return (
+            <button
+              key={category}
+              onClick={() => handleProgressClick(index)}
+              className="flex flex-col items-center focus:outline-none"
+            >
+              <div className="relative flex items-center justify-center w-4 h-4 mt-2 rounded-full">
+                {hasItem ? (
+                  <Check className="text-primary" />
+                ) : (
+                  <div
+                    className={`flex items-center justify-center w-4 h-4 rounded-full ${
+                      isCurrent
+                        ? 'bg-black text-white'
+                        : 'bg-transparent text-muted-foreground border border-muted'
+                    }`}
+                  >
+                    <span style={{ fontSize: '0.525rem' }}>{index + 1}</span>
+                  </div>
+                )}
+              </div>
+              <span
+                className={`text-xs capitalize pt-1 ${
+                  isCurrent ? 'text-primary font-bold' : 'text-muted-foreground'
+                }`}
               >
-                
-                <div className="relative flex items-center justify-center w-4 h-4 mt-2 rounded-full">
-                  {hasItem ? (
-                    // Icona di spunta per step con articoli aggiunti
-                    <Check className="text-primary" />
-                  ) : (
-                    // Numero per step senza articoli, con cerchio nero o trasparente
-                    <div
-                      className={`flex items-center justify-center w-4 h-4 rounded-full ${
-                        isCurrent
-                          ? 'bg-black text-white'
-                          : 'bg-transparent text-muted-foreground border border-muted'
-                      }`}
-                    >
-                      <span style={{ fontSize: '0.525rem' }}>{index + 1}</span>
-                    </div>
-                  )}
-                </div>
-                <span
-                  className={`text-xs capitalize pt-1 ${
-                    isCurrent ? 'text-primary font-bold' : 'text-muted-foreground'
-                  }`}
-                >
-                  {category}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+                {category}
+              </span>
+            </button>
+          );
+        })}
       </div>
-    );
+    </div>
+  );
   
 
-    const renderItemCard = (item: Item) => (
-      <Card
-        className={`w-64 h-80 flex flex-col justify-between relative ${
-          fadingOut ? 'card-fade-out' : fadingIn ? 'card-next card-next-active' : 'card-fade-in'
-        }`}
-      >
-        <div 
-          ref={overlayRef} 
-          className="absolute inset-0 bg-transparent rounded-lg transition-all duration-300" 
-        />
-        <CardContent className="p-4">
-          <div className="relative w-full h-48 mb-2 flex items-center justify-center overflow-hidden">
-            <Image
-              src={item.image}
-              alt={item.name}
-              width={200}
-              height={200}
-              className="rounded-lg object-cover"
-            />
-          </div>
-          <p className="text-center font-semibold">{item.name}</p>
-          <p className="text-center text-sm text-gray-500 mb-2">
-            ${item.price.toFixed(2)}
-          </p>
-          <p className="text-center text-xs text-gray-600">{item.description}</p>
-        </CardContent>
-      </Card>
-    );
+  const renderItemCard = (item: Item) => (
+    <Card
+      className={`w-64 h-80 flex flex-col justify-between relative ${
+        fadingOut ? 'card-fade-out' : fadingIn ? 'card-next card-next-active' : 'card-fade-in'
+      }`}
+    >
+      <div 
+        ref={overlayRef} 
+        className="absolute inset-0 bg-transparent rounded-lg transition-all duration-300" 
+      />
+      <CardContent className="p-4">
+        <div className="relative w-full h-48 mb-2 flex items-center justify-center overflow-hidden">
+          <Image
+            src={item.image}
+            alt={item.name}
+            width={200}
+            height={200}
+            className="rounded-lg object-cover"
+          />
+        </div>
+        <p className="text-center font-semibold">{item.name}</p>
+        <p className="text-center text-sm text-gray-500 mb-2">
+          ${item.price.toFixed(2)}
+        </p>
+        <p className="text-center text-xs text-gray-600">{item.description}</p>
+      </CardContent>
+    </Card>
+  );
 
   const renderOutfitItem = (category: string) => (
     <div key={category} className="relative w-full h-[300px]">
@@ -327,7 +323,7 @@ export default function FashionApp() {
 
   return (
     <div className="container mx-auto p-2 pb-32">
-      <h1 className="text-4xl font-black mt-1 mb-1 text-center">SwipeFit</h1>
+      <h1 className="text-4xl font-black mt-1 mb-1 text-center ">SwipeFit</h1>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="hidden">
@@ -339,7 +335,7 @@ export default function FashionApp() {
         <TabsContent value="browse">
           <Card className="border-0 shadow-none">
             <CardHeader className="text-center">
-              <CardTitle>Choose your {CATEGORIES[currentCategory]}</CardTitle>
+              <CardTitle>Choose your <span className='font-bold underline'>{CATEGORIES[currentCategory]}</span></CardTitle>
             </CardHeader>
             <CardContent className="flex justify-center items-center p-4 relative">
                 {currentItems.length > 0 && (
