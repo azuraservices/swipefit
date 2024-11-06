@@ -236,7 +236,7 @@ export default function FashionApp() {
             >
               <div className="relative flex items-center justify-center w-4 h-4 mt-2 rounded-full">
                 {hasItem ? (
-                  <Check className="text-primary" />
+                  <Check className="text-primary text-green-500" />
                 ) : (
                   <div
                     className={`flex items-center justify-center w-4 h-4 rounded-full ${
@@ -266,7 +266,7 @@ export default function FashionApp() {
 
   const renderItemCard = (item: Item) => (
     <Card
-      className={`w-64 h-80 flex flex-col justify-between relative ${
+      className={`w-full flex flex-col justify-between relative ${
         fadingOut ? 'card-fade-out' : fadingIn ? 'card-next card-next-active' : 'card-fade-in'
       }`}
     >
@@ -274,7 +274,7 @@ export default function FashionApp() {
         ref={overlayRef} 
         className="absolute inset-0 bg-transparent rounded-lg transition-all duration-300" 
       />
-      <CardContent className="p-4">
+      <CardContent className="p-4 mx-auto">
         <div className="relative w-full h-48 mb-2 flex items-center justify-center overflow-hidden">
           <Image
             src={item.image}
@@ -333,11 +333,11 @@ export default function FashionApp() {
         </TabsList>
 
         <TabsContent value="browse">
-          <Card className="border-0 shadow-none">
+          <Card className="border-0 shadow-none w-full mx-auto">
             <CardHeader className="text-center">
               <CardTitle>Choose your <span className='font-bold underline'>{CATEGORIES[currentCategory]}</span></CardTitle>
             </CardHeader>
-            <CardContent className="flex justify-center items-center p-4 relative">
+            <CardContent className="flex justify-center items-center p-4 relative mx-auto">
                 {currentItems.length > 0 && (
                 <TinderCard
                   key={currentItems[0].id}
@@ -354,15 +354,15 @@ export default function FashionApp() {
                 </TinderCard>
               )}
             </CardContent>
-            <CardFooter className="flex justify-center gap-4">
+            <CardFooter className="flex justify-center gap-4 mx-auto">
               <Button 
                 onClick={() => cardRef.current?.swipe('left')} 
                 variant="outline"
               >
-                <X className="mr-2 h-4 w-4" /> Skip
+                <X className="mr-2 h-4 w-4 text-red-500" /> Skip
               </Button>
               <Button onClick={() => cardRef.current?.swipe('right')}>
-                <Check className="mr-2 h-4 w-4" /> Add to Outfit
+                <Check className="mr-2 h-4 w-4 text-green-500" /> Add to Outfit
               </Button>
             </CardFooter>
           </Card>
