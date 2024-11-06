@@ -38,9 +38,8 @@ type Item = {
   description: string;
 };
 
-
 // Mock data for fashion items with sample images
-const mockItems: Item[]  = [
+const mockItems: Item[] = [
   {
     id: '1',
     name: 'White T-Shirt',
@@ -111,19 +110,19 @@ const categories = ['accessories', 'tops', 'bottoms', 'shoes'];
 
 export default function FashionApp() {
   const [currentCategory, setCurrentCategory] = useState(0);
-  const [currentItems, setCurrentItems] = useState<Item[]>([]); // Aggiunta del tipo Item[]
-  const [outfit, setOutfit] = useState({
+  const [currentItems, setCurrentItems] = useState<Item[]>([]);
+  const [outfit, setOutfit] = useState<{ [key: string]: Item | null }>({
     accessories: null,
     tops: null,
     bottoms: null,
     shoes: null,
   });
-  const [savedOutfits, setSavedOutfits] = useState([]);
+  const [savedOutfits, setSavedOutfits] = useState<{ name: string; items: { [key: string]: Item | null } }[]>([]);
   const [outfitName, setOutfitName] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('browse');
 
-  const cardRef = useRef(null);
+  const cardRef = useRef<any>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('savedOutfits');
@@ -139,13 +138,13 @@ export default function FashionApp() {
     );
   };
 
-  const addToOutfit = (item) => {
+  const addToOutfit = (item: Item) => {
     setOutfit((prev) => ({ ...prev, [item.category]: item }));
     toast.success(`Added ${item.name} to your outfit!`);
     moveToNextCategory();
   };
 
-  const removeFromOutfit = (category) => {
+  const removeFromOutfit = (category: string) => {
     setOutfit((prev) => ({ ...prev, [category]: null }));
     toast.info(`Removed ${category} from your outfit.`);
   };
@@ -177,13 +176,13 @@ export default function FashionApp() {
     toast.success('Outfit saved successfully!');
   };
 
-  const loadOutfit = (savedOutfit) => {
+  const loadOutfit = (savedOutfit: { name: string; items: { [key: string]: Item | null } }) => {
     setOutfit(savedOutfit.items);
     setActiveTab('visualizer');
     toast.info(`Loaded outfit: ${savedOutfit.name}`);
   };
 
-  const deleteOutfit = (index) => {
+  const deleteOutfit = (index: number) => {
     const newSavedOutfits = savedOutfits.filter((_, i) => i !== index);
     setSavedOutfits(newSavedOutfits);
     localStorage.setItem('savedOutfits', JSON.stringify(newSavedOutfits));
@@ -192,12 +191,12 @@ export default function FashionApp() {
 
   const calculateTotalPrice = () => {
     return Object.values(outfit)
-      .filter((item) => item !== null)
+      .filter((item): item is Item => item !== null)
       .reduce((total, item) => total + item.price, 0)
       .toFixed(2);
   };
 
-  const onSwipe = (direction) => {
+  const onSwipe = (direction: string) => {
     if (direction === 'right') {
       addToOutfit(currentItems[0]);
     } else {
