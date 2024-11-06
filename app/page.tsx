@@ -26,7 +26,7 @@ import { Input } from '@/components/ui/input';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Search, Shirt, BookMarked, X, Check } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
+import './globals.css';
 
 
 // Types
@@ -71,6 +71,8 @@ export default function FashionApp() {
   const [outfitName, setOutfitName] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('browse');
+  const [fadingOut, setFadingOut] = useState(false);
+  const [fadingIn, setFadingIn] = useState(false);
 
   // Refs
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -172,17 +174,21 @@ export default function FashionApp() {
 
   // Card Swipe Handlers
   const handleSwipe = (direction: string) => {
-    // Reset overlay color
-    if (overlayRef.current) {
-      overlayRef.current.style.backgroundColor = 'transparent';
-    }
+    setFadingOut(true);
   
-    if (direction === 'right' && currentItems.length > 0) {
-      addToOutfit(currentItems[0]);
-      setCurrentItems((prev) => prev.slice(1));
-    } else if (direction === 'left' && currentItems.length > 0) {
-      setCurrentItems((prev) => [...prev.slice(1), prev[0]]);
-    }
+    setTimeout(() => {
+      if (direction === 'right' && currentItems.length > 0) {
+        addToOutfit(currentItems[0]);
+        setCurrentItems((prev) => prev.slice(1));
+      } else if (direction === 'left' && currentItems.length > 0) {
+        setCurrentItems((prev) => [...prev.slice(1), prev[0]]);
+      }
+      
+      setFadingOut(false);
+      setFadingIn(true);
+  
+      setTimeout(() => setFadingIn(false), 300); // Attesa di 300ms per dissolvenza entrante
+    }, 300); // Attesa per la dissolvenza uscente
   };
   
   const handleSwipeRequirementFulfilled = (direction: string) => {
@@ -261,30 +267,34 @@ export default function FashionApp() {
     );
   
 
-  const renderItemCard = (item: Item) => (
-    <Card className="w-64 h-80 flex flex-col justify-between relative">
-      <div 
-        ref={overlayRef} 
-        className="absolute inset-0 bg-transparent rounded-lg transition-all duration-300" 
-      />
-      <CardContent className="p-4">
-        <div className="relative w-full h-48 mb-2 flex items-center justify-center overflow-hidden">
-          <Image
-            src={item.image}
-            alt={item.name}
-            width={200}
-            height={200}
-            className="rounded-lg object-cover"
-          />
-        </div>
-        <p className="text-center font-semibold">{item.name}</p>
-        <p className="text-center text-sm text-gray-500 mb-2">
-          ${item.price.toFixed(2)}
-        </p>
-        <p className="text-center text-xs text-gray-600">{item.description}</p>
-      </CardContent>
-    </Card>
-  );
+    const renderItemCard = (item: Item) => (
+      <Card
+        className={`w-64 h-80 flex flex-col justify-between relative ${
+          fadingOut ? 'card-fade-out' : fadingIn ? 'card-next card-next-active' : 'card-fade-in'
+        }`}
+      >
+        <div 
+          ref={overlayRef} 
+          className="absolute inset-0 bg-transparent rounded-lg transition-all duration-300" 
+        />
+        <CardContent className="p-4">
+          <div className="relative w-full h-48 mb-2 flex items-center justify-center overflow-hidden">
+            <Image
+              src={item.image}
+              alt={item.name}
+              width={200}
+              height={200}
+              className="rounded-lg object-cover"
+            />
+          </div>
+          <p className="text-center font-semibold">{item.name}</p>
+          <p className="text-center text-sm text-gray-500 mb-2">
+            ${item.price.toFixed(2)}
+          </p>
+          <p className="text-center text-xs text-gray-600">{item.description}</p>
+        </CardContent>
+      </Card>
+    );
 
   const renderOutfitItem = (category: string) => (
     <div key={category} className="relative w-full h-[300px]">
@@ -316,7 +326,7 @@ export default function FashionApp() {
 
   return (
     <div className="container mx-auto p-2 pb-32">
-      <h1 className="text-4xl font-black mb-2 text-center">SwipeFit</h1>
+      <h1 className="text-4xl font-black mt-1 mb-3 text-center">SwipeFit</h1>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="hidden">

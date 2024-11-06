@@ -70,31 +70,7 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
-
-  .fade-out {
-    opacity: 0;
-    transition: opacity 0.3s ease;
   }
-
-  .card-enter {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  .card-enter-active {
-    opacity: 1;
-    transform: scale(1);
-    transition: opacity 300ms, transform 300ms;
-  }
-  .card-exit {
-    opacity: 1;
-    transform: scale(1);
-  }
-  .card-exit-active {
-    opacity: 0;
-    transform: scale(0.8);
-    transition: opacity 300ms, transform 300ms;
-  }
-}
 
 @layer base {
   * {
@@ -103,4 +79,25 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.card-fade-in {
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.card-fade-out {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.card-next {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.card-next-active {
+  opacity: 1;
+  transform: scale(1);
 }
