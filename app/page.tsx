@@ -46,14 +46,14 @@ const CATEGORIES = ['accessories', 'tops', 'bottoms', 'shoes'] as const;
 const LOCAL_STORAGE_KEY = 'fashionApp_savedOutfits';
 
 const MOCK_ITEMS: Item[] = [
-  { id: '1', name: 'White T-Shirt', category: 'tops', image: 'https://picsum.photos/200', price: 19.99, description: 'Classic white tee.' },
-  { id: '2', name: 'Black T-Shirt', category: 'tops', image: 'https://picsum.photos/200', price: 19.99, description: 'Versatile black tee.' },
-  { id: '3', name: 'Blue Jeans', category: 'bottoms', image: 'https://picsum.photos/200', price: 49.99, description: 'Comfortable jeans.' },
-  { id: '4', name: 'Black Jeans', category: 'bottoms', image: 'https://picsum.photos/200', price: 49.99, description: 'Sleek black jeans.' },
-  { id: '5', name: 'Sneakers', category: 'shoes', image: 'https://picsum.photos/200', price: 79.99, description: 'Stylish sneakers.' },
-  { id: '6', name: 'Boots', category: 'shoes', image: 'https://picsum.photos/200', price: 99.99, description: 'Durable boots.' },
-  { id: '7', name: 'Hat', category: 'accessories', image: 'https://picsum.photos/200', price: 24.99, description: 'Trendy hat.' },
-  { id: '8', name: 'Scarf', category: 'accessories', image: 'https://picsum.photos/200', price: 29.99, description: 'Soft scarf.' },
+  { id: '1', name: 'White T-Shirt', category: 'tops', image: '/images/whiteshirt.jpeg', price: 19.99, description: 'Classic white tee.' },
+  { id: '2', name: 'Black T-Shirt', category: 'tops', image: '/images/blackshirt.jpeg', price: 19.99, description: 'Versatile black tee.' },
+  { id: '3', name: 'Blue Jeans', category: 'bottoms', image: '/images/bluejeans.jpeg', price: 49.99, description: 'Comfortable jeans.' },
+  { id: '4', name: 'Black Jeans', category: 'bottoms', image: '/images/blackjeans.jpeg', price: 49.99, description: 'Sleek black jeans.' },
+  { id: '5', name: 'Sneakers', category: 'shoes', image: '/images/shoes.jpeg', price: 79.99, description: 'Stylish sneakers.' },
+  { id: '6', name: 'Boots', category: 'shoes', image: '/images/boots.jpeg', price: 99.99, description: 'Durable boots.' },
+  { id: '7', name: 'Hat', category: 'accessories', image: '/images/hat.jpeg', price: 24.99, description: 'Trendy hat.' },
+  { id: '8', name: 'Scarf', category: 'accessories', image: '/images/scarf.jpeg', price: 29.99, description: 'Soft scarf.' },
 ];
 
 export default function FashionApp() {
