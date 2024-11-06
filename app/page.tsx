@@ -28,7 +28,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Search, Shirt, BookMarked, ShoppingBag, X, Check } from 'lucide-react';
 
-// Definisci il tipo Item per i tuoi oggetti di moda
+// Tipo per i dati degli articoli di moda
 type Item = {
   id: string;
   name: string;
@@ -38,7 +38,7 @@ type Item = {
   description: string;
 };
 
-// Mock data for fashion items with sample images
+// Mock data per gli articoli di moda
 const mockItems: Item[] = [
   {
     id: '1',
@@ -121,6 +121,7 @@ export default function FashionApp() {
   const [outfitName, setOutfitName] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('browse');
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null); // Stato per la direzione dello swipe
 
   const cardRef = useRef<any>(null);
 
@@ -196,12 +197,16 @@ export default function FashionApp() {
       .toFixed(2);
   };
 
-  const onSwipe = (direction: string) => {
+  const onSwipe = (direction: 'left' | 'right') => {
+    setSwipeDirection(direction);
+
     if (direction === 'right') {
       addToOutfit(currentItems[0]);
     } else {
       setCurrentItems((prev) => [...prev.slice(1), prev[0]]);
     }
+
+    setTimeout(() => setSwipeDirection(null), 800);
   };
 
   return (
@@ -212,59 +217,62 @@ export default function FashionApp() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsContent value="browse">
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                Browse Items - {categories[currentCategory]}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex justify-center items-center h-[60vh]">
-              {currentItems.length > 0 && (
-                <TinderCard
-                  key={currentItems[0]?.id}
-                  ref={cardRef}
-                  onSwipe={onSwipe}
-                  swipeRequirementType="position"
-                  swipeThreshold={100}
-                >
-                  <Card className="w-64 h-80 flex flex-col justify-between">
-                    <CardContent className="p-4">
-                      <div className="relative w-full h-48 mb-2 flex items-center justify-center overflow-hidden">
-                        <Image
-                          src={currentItems[0].image}
-                          alt={currentItems[0].name}
-                          width={200}
-                          height={200}
-                          objectFit="cover"
-                          className="rounded-lg"
-                        />
-                      </div>
-                      <p className="text-center font-semibold">
-                        {currentItems[0].name}
-                      </p>
-                      <p className="text-center text-sm text-gray-500 mb-2">
-                        ${currentItems[0].price.toFixed(2)}
-                      </p>
-                      <p className="text-center text-xs text-gray-600">
-                        {currentItems[0].description}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </TinderCard>
-              )}
-            </CardContent>
-            <CardFooter className="flex justify-center gap-4">
-              <Button
-                onClick={() => cardRef.current.swipe('left')}
-                variant="outline"
+        <Card>
+          <CardHeader>
+            <CardTitle>Browse Items - {categories[currentCategory]}</CardTitle>
+          </CardHeader>
+          <CardContent className="flex justify-center items-center h-[60vh] relative">
+            {currentItems.length > 0 && (
+              <TinderCard
+                key={currentItems[0]?.id}
+                ref={cardRef}
+                onSwipe={onSwipe}
+                swipeRequirementType="position"
+                swipeThreshold={100}
               >
-                <X className="mr-2 h-4 w-4" /> Dislike
-              </Button>
-              <Button onClick={() => cardRef.current.swipe('right')}>
-                <Check className="mr-2 h-4 w-4" /> Like
-              </Button>
-            </CardFooter>
-          </Card>
+                <Card className="w-64 h-80 flex flex-col justify-between relative">
+                  {swipeDirection && (
+                    <div
+                      className={`absolute inset-0 flex items-center justify-center rounded-lg bg-opacity-50 transition-opacity duration-300 ${
+                        swipeDirection === 'right' ? 'bg-green-500' : 'bg-red-500'
+                      }`}
+                    >
+                      {swipeDirection === 'right' ? (
+                        <Check className="text-white h-12 w-12" />
+                      ) : (
+                        <X className="text-white h-12 w-12" />
+                      )}
+                    </div>
+                  )}
+
+                  <CardContent className="p-4">
+                    <div className="relative w-full h-48 mb-2 flex items-center justify-center overflow-hidden">
+                      <Image
+                        src={currentItems[0].image}
+                        alt={currentItems[0].name}
+                        width={200}
+                        height={200}
+                        objectFit="cover"
+                        className="rounded-lg"
+                      />
+                    </div>
+                    <p className="text-center font-semibold">{currentItems[0].name}</p>
+                    <p className="text-center text-sm text-gray-500 mb-2">${currentItems[0].price.toFixed(2)}</p>
+                    <p className="text-center text-xs text-gray-600">{currentItems[0].description}</p>
+                  </CardContent>
+                </Card>
+              </TinderCard>
+            )}
+          </CardContent>
+          <CardFooter className="flex justify-center gap-4">
+            <Button onClick={() => cardRef.current.swipe('left')} variant="outline">
+              <X className="mr-2 h-4 w-4" /> Dislike
+            </Button>
+            <Button onClick={() => cardRef.current.swipe('right')}>
+              <Check className="mr-2 h-4 w-4" /> Like
+            </Button>
+          </CardFooter>
+        </Card>
         </TabsContent>
 
         <TabsContent value="visualizer">
@@ -278,8 +286,8 @@ export default function FashionApp() {
                   {outfit[category] ? (
                     <>
                       <Image
-                        src={outfit[category].image}
-                        alt={outfit[category].name}
+                        src={outfit[category]?.image ?? ''}
+                        alt={outfit[category]?.name ?? 'Outfit item'}
                         layout="fill"
                         objectFit="contain"
                         className="rounded-lg"
