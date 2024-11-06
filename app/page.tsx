@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Dialog,
@@ -23,12 +23,10 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Search, Shirt, BookMarked, ShoppingBag, X, Check } from 'lucide-react';
+import { Search, Shirt, BookMarked, X, Check } from 'lucide-react';
 
-// Tipo per i dati degli articoli di moda
 type Item = {
   id: string;
   name: string;
@@ -38,72 +36,15 @@ type Item = {
   description: string;
 };
 
-// Mock data per gli articoli di moda
 const mockItems: Item[] = [
-  {
-    id: '1',
-    name: 'White T-Shirt',
-    category: 'tops',
-    image: 'https://picsum.photos/200',
-    price: 19.99,
-    description: 'Classic white tee, perfect for any casual outfit.',
-  },
-  {
-    id: '2',
-    name: 'Black T-Shirt',
-    category: 'tops',
-    image: 'https://picsum.photos/200',
-    price: 19.99,
-    description: 'Versatile black tee, a wardrobe essential.',
-  },
-  {
-    id: '3',
-    name: 'Blue Jeans',
-    category: 'bottoms',
-    image: 'https://picsum.photos/200',
-    price: 49.99,
-    description: 'Comfortable blue jeans for everyday wear.',
-  },
-  {
-    id: '4',
-    name: 'Black Jeans',
-    category: 'bottoms',
-    image: 'https://picsum.photos/200',
-    price: 49.99,
-    description: 'Sleek black jeans, perfect for day or night.',
-  },
-  {
-    id: '5',
-    name: 'Sneakers',
-    category: 'shoes',
-    image: 'https://picsum.photos/200',
-    price: 79.99,
-    description: 'Stylish and comfortable sneakers for active lifestyles.',
-  },
-  {
-    id: '6',
-    name: 'Boots',
-    category: 'shoes',
-    image: 'https://picsum.photos/200',
-    price: 99.99,
-    description: 'Durable boots suitable for various occasions.',
-  },
-  {
-    id: '7',
-    name: 'Hat',
-    category: 'accessories',
-    image: 'https://picsum.photos/200',
-    price: 24.99,
-    description: 'Trendy hat to complete your look.',
-  },
-  {
-    id: '8',
-    name: 'Scarf',
-    category: 'accessories',
-    image: 'https://picsum.photos/200',
-    price: 29.99,
-    description: 'Soft scarf for added warmth and style.',
-  },
+  { id: '1', name: 'White T-Shirt', category: 'tops', image: 'https://picsum.photos/200', price: 19.99, description: 'Classic white tee.' },
+  { id: '2', name: 'Black T-Shirt', category: 'tops', image: 'https://picsum.photos/200', price: 19.99, description: 'Versatile black tee.' },
+  { id: '3', name: 'Blue Jeans', category: 'bottoms', image: 'https://picsum.photos/200', price: 49.99, description: 'Comfortable jeans.' },
+  { id: '4', name: 'Black Jeans', category: 'bottoms', image: 'https://picsum.photos/200', price: 49.99, description: 'Sleek black jeans.' },
+  { id: '5', name: 'Sneakers', category: 'shoes', image: 'https://picsum.photos/200', price: 79.99, description: 'Stylish sneakers.' },
+  { id: '6', name: 'Boots', category: 'shoes', image: 'https://picsum.photos/200', price: 99.99, description: 'Durable boots.' },
+  { id: '7', name: 'Hat', category: 'accessories', image: 'https://picsum.photos/200', price: 24.99, description: 'Trendy hat.' },
+  { id: '8', name: 'Scarf', category: 'accessories', image: 'https://picsum.photos/200', price: 29.99, description: 'Soft scarf.' },
 ];
 
 const categories = ['accessories', 'tops', 'bottoms', 'shoes'];
@@ -121,8 +62,8 @@ export default function FashionApp() {
   const [outfitName, setOutfitName] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('browse');
-  const overlayRef = useRef<HTMLDivElement>(null); // Referenza per l'overlay
-  const cardRef = useRef<any>(null); // Referenza per la carta
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<any>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('savedOutfits');
@@ -195,16 +136,13 @@ export default function FashionApp() {
   };
 
   const onSwipe = (direction: 'left' | 'right' | 'up' | 'down') => {
-    if (overlayRef.current) {
-      overlayRef.current.style.backgroundColor = ''; // Reset del colore
-      if (direction === 'right') {
-        overlayRef.current.classList.add('fade-out'); // Aggiungi la classe di dissolvenza
-        addToOutfit(currentItems[0]);
-      }
-      setTimeout(() => {
-        setCurrentItems((prev) => [...prev.slice(1)]);
-        if (overlayRef.current) overlayRef.current.classList.remove('fade-out'); // Rimuovi la classe dopo il timeout
-      }, 300);
+    if (overlayRef.current) overlayRef.current.style.backgroundColor = 'transparent'; // Rimuove il colore dell'overlay senza influenzare il contenuto
+
+    if (direction === 'right') {
+      addToOutfit(currentItems[0]);
+      setCurrentItems((prev) => prev.slice(1));
+    } else if (direction === 'left') {
+      setCurrentItems((prev) => [...prev.slice(1), prev[0]]); // Riposiziona la carta alla fine per un ciclo infinito
     }
   };
 
@@ -215,7 +153,7 @@ export default function FashionApp() {
       } else if (direction === 'right') {
         overlayRef.current.style.backgroundColor = 'rgba(0, 255, 0, 0.5)'; // Verde per scelto
       } else {
-        overlayRef.current.style.backgroundColor = '';
+        overlayRef.current.style.backgroundColor = 'transparent'; // Ritorna trasparente quando centrato
       }
     }
   };
@@ -228,16 +166,17 @@ export default function FashionApp() {
         <TabsContent value="browse">
           <Card className="border-0 shadow-none">
             <CardHeader>
-              <CardTitle>Browsing: {categories[currentCategory]}</CardTitle>
+              <CardTitle>Browse Items - {categories[currentCategory]}</CardTitle>
             </CardHeader>
             <CardContent className="flex justify-center items-center h-[60vh] relative">
               {currentItems.length > 0 && (
                 <TinderCard
                   key={currentItems[0]?.id}
+                  ref={cardRef}
                   onSwipe={onSwipe}
                   onSwipeRequirementFulfilled={handleSwipeRequirementFulfilled}
                   onCardLeftScreen={() => {
-                    if (overlayRef.current) overlayRef.current.style.backgroundColor = '';
+                    if (overlayRef.current) overlayRef.current.style.backgroundColor = 'transparent'; // Reset colore
                   }}
                   swipeRequirementType="position"
                   swipeThreshold={100}
