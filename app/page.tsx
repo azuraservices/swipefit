@@ -27,6 +27,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Search, Shirt, BookMarked, X, Check } from 'lucide-react';
 
+
 // Types
 type Item = {
   id: string;
@@ -262,7 +263,7 @@ export default function FashionApp() {
 
   return (
     <div className="container mx-auto p-2 pb-16">
-      <h1 className="text-3xl font-bold mb-6 text-center">Outfit Builder</h1>
+      <h1 className="text-4xl font-bold mb-2 text-center">SwipeFit</h1>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="hidden">
@@ -273,10 +274,10 @@ export default function FashionApp() {
 
         <TabsContent value="browse">
           <Card className="border-0 shadow-none">
-            <CardHeader>
+            <CardHeader className="text-center">
               <CardTitle>Choose your {CATEGORIES[currentCategory]}</CardTitle>
             </CardHeader>
-            <CardContent className="flex justify-center items-center h-[60vh] relative">
+            <CardContent className="flex justify-center items-center p-4 relative">
                 {currentItems.length > 0 && (
                 <TinderCard
                   key={currentItems[0].id}
