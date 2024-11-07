@@ -272,10 +272,10 @@ export default function FashionApp() {
     >
       <div 
         ref={overlayRef} 
-        className="absolute inset-0 bg-transparent rounded-lg transition-all duration-300" 
+        className="absolute inset-0 bg-transparent rounded-lg transition-all duration-300 mb-10" 
       />
       <CardContent className="p-4 flex flex-col h-full">
-        <div className="relative flex-1 mb-4" style={{ minHeight: '200px', maxHeight: '300px' }}>
+        <div className="relative flex-1 mb-4">
           <Image
             src={item.image}
             alt={item.name}
@@ -283,7 +283,7 @@ export default function FashionApp() {
             className="rounded-lg object-contain"
           />
         </div>
-        <div className="text-center space-y-2">
+        <div className="text-center space-y-2 mb-0">
           <p className="font-semibold text-lg">{item.name}</p>
           <p className="text-gray-500">€{item.price.toFixed(2)}</p>
         </div>
