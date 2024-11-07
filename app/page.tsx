@@ -332,11 +332,11 @@ export default function FashionApp() {
         </TabsList>
   
         <TabsContent value="browse" className="flex flex-col flex-1">
-          <Card className="flex flex-col flex-1 border-0 shadow-none">
+          <Card className="flex flex-col flex-1 border-0 shadow-none overflow-visible">
             <CardHeader className="text-center">
               <CardTitle>Choose your <span className='font-bold underline'>{CATEGORIES[currentCategory]}</span></CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 overflow-hidden">
+            <CardContent className="flex-1 overflow-visible">
               {currentItems.length > 0 && (
                 <div className="h-full flex items-center justify-center">
                   <div className="w-full max-w-md aspect-[3/4] relative max-h-[calc(100vh-300px)]">
