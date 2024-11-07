@@ -266,7 +266,7 @@ export default function FashionApp() {
 
   const renderItemCard = (item: Item) => (
     <Card
-      className={`w-full h-full flex flex-col justify-between relative ${
+      className={`w-full h-full flex flex-col justify-between relative mb-10 ${
         fadingOut ? 'card-fade-out' : fadingIn ? 'card-next card-next-active' : 'card-fade-in'
       }`}
     >
@@ -331,7 +331,7 @@ export default function FashionApp() {
           <TabsTrigger value="saved">Saved</TabsTrigger>
         </TabsList>
   
-        <TabsContent value="browse" className="flex flex-col flex-1 pb-32">
+        <TabsContent value="browse" className="flex flex-col flex-1">
           <Card className="flex flex-col flex-1 border-0 shadow-none ">
             <CardHeader className="text-center">
               <CardTitle>Choose your <span className='font-bold underline'>{CATEGORIES[currentCategory]}</span></CardTitle>
