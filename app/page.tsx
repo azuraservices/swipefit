@@ -272,15 +272,15 @@ export default function FashionApp() {
     >
       <div 
         ref={overlayRef} 
-        className="absolute inset-0 bg-transparent rounded-lg transition-all duration-300" 
+        className="absolute inset-0 bg-transparent rounded-lg transition-all duration-300 p-6" 
       />
-      <CardContent className="p-2 flex flex-col h-full">
-        <div className="relative flex-grow">
+      <CardContent className="flex flex-col h-full">
+        <div className="relative flex-grow justify-between items-center">
           <Image
             src={item.image}
             alt={item.name}
             fill
-            className="rounded-lg object-contain"
+            className="rounded-lg object-contain m-0 p-0"
           />
         </div>
         <div className="text-center space-y-2 mb-0">
