@@ -351,7 +351,7 @@ export default function FashionApp() {
                       preventSwipe={['up', 'down']}
                       swipeRequirementType="position"
                       swipeThreshold={100}
-                      className="absolute inset-0 pb-10 pr-4 pl-4"
+                      className="relative flex-grow pr-4 pl-4"
                     >
                       {renderItemCard(currentItems[0])}
                     </TinderCard>
