@@ -340,7 +340,7 @@ export default function FashionApp() {
             <CardContent className="flex-1 p-4 overflow-hidden">
               {currentItems.length > 0 && (
                 <div className="h-full flex items-center justify-center">
-                  <div className="w-full max-w-md aspect-[3/4] relative max-h-[calc(100vh-300px)]">
+                  <div className="w-full max-w-md aspect-[3/4] relative max-h-[calc(100vh-300px)] mb-10">
                     <TinderCard
                       key={currentItems[0].id}
                       ref={cardRef}
@@ -351,7 +351,7 @@ export default function FashionApp() {
                       preventSwipe={['up', 'down']}
                       swipeRequirementType="position"
                       swipeThreshold={100}
-                      className="absolute inset-0 flex-grow pr-4 pl-4 my-4"
+                      className="absolute inset-0 flex-grow pr-4 pl-4 mb-10"
                     >
                       {renderItemCard(currentItems[0])}
                     </TinderCard>
