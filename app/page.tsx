@@ -331,7 +331,7 @@ export default function FashionApp() {
           <TabsTrigger value="saved">Saved</TabsTrigger>
         </TabsList>
   
-        <TabsContent value="browse" className="flex flex-col flex-1">
+        <TabsContent value="browse" className="flex flex-col flex-1 pb-32">
           <Card className="flex flex-col flex-1 border-0 shadow-none ">
             <CardHeader className="text-center">
               <CardTitle>Choose your <span className='font-bold underline'>{CATEGORIES[currentCategory]}</span></CardTitle>
