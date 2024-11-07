@@ -285,8 +285,7 @@ export default function FashionApp() {
         </div>
         <div className="text-center space-y-2">
           <p className="font-semibold text-lg">{item.name}</p>
-          <p className="text-gray-500">${item.price.toFixed(2)}</p>
-          <p className="text-sm text-gray-600">{item.description}</p>
+          <p className="text-gray-500">€{item.price.toFixed(2)}</p>
         </div>
       </CardContent>
     </Card>
