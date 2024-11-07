@@ -266,7 +266,7 @@ export default function FashionApp() {
 
   const renderItemCard = (item: Item) => (
     <Card
-      className={`w-full h-full flex flex-col justify-between relative max-h-[500px] ${
+      className={`w-full h-full flex flex-col justify-between relative max-h-[400px] ${
         fadingOut ? 'card-fade-out' : fadingIn ? 'card-next card-next-active' : 'card-fade-in'
       }`}
     >
