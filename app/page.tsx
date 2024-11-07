@@ -272,7 +272,7 @@ export default function FashionApp() {
     >
       <div 
         ref={overlayRef} 
-        className="absolute inset-0 bg-transparent rounded-lg transition-all duration-300 mb-10" 
+        className="absolute inset-0 bg-transparent rounded-lg transition-all duration-300" 
       />
       <CardContent className="p-4 flex flex-col h-full">
         <div className="relative flex-1 mb-4">
