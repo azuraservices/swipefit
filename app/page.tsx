@@ -321,8 +321,8 @@ export default function FashionApp() {
   );
 
   return (
-    <div className="flex-1 flex flex-col mx-auto container pb-32 h-full max-h-screen">
-      <h1 className="text-4xl font-black my-4 text-center">SwipeFit</h1>
+    <div className="flex-1 flex flex-col mx-auto container h-full max-h-screen">
+      <h1 className="text-4xl font-black text-center">SwipeFit</h1>
   
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex-1">
         <TabsList className="hidden">
