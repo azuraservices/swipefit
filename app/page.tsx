@@ -266,13 +266,13 @@ export default function FashionApp() {
 
   const renderItemCard = (item: Item) => (
     <Card
-      className={`w-full h-full flex flex-col justify-between relative mb-10 ${
+      className={`w-full h-full flex flex-col justify-between relative max-h-[500px] ${
         fadingOut ? 'card-fade-out' : fadingIn ? 'card-next card-next-active' : 'card-fade-in'
       }`}
     >
       <div 
         ref={overlayRef} 
-        className="absolute inset-0 bg-transparent rounded-lg transition-all duration-300 p-6" 
+        className="absolute inset-0 bg-transparent rounded-lg transition-all duration-300" 
       />
       <CardContent className="flex flex-col h-full">
         <div className="relative flex-grow justify-between items-center">
@@ -280,7 +280,7 @@ export default function FashionApp() {
             src={item.image}
             alt={item.name}
             fill
-            className="rounded-lg object-contain m-0 p-0"
+            className="rounded-lg object-contain m-0 p-0 "
           />
         </div>
         <div className="text-center space-y-2 mb-0">
