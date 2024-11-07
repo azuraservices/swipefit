@@ -266,7 +266,7 @@ export default function FashionApp() {
 
   const renderItemCard = (item: Item) => (
     <Card
-      className={`w-full flex flex-col justify-between relative ${
+      className={`w-full h-full flex flex-col justify-between relative ${
         fadingOut ? 'card-fade-out' : fadingIn ? 'card-next card-next-active' : 'card-fade-in'
       }`}
     >
@@ -274,21 +274,20 @@ export default function FashionApp() {
         ref={overlayRef} 
         className="absolute inset-0 bg-transparent rounded-lg transition-all duration-300" 
       />
-      <CardContent className="p-4 mx-auto">
-        <div className="relative w-full h-48 mb-2 flex items-center justify-center overflow-hidden">
+      <CardContent className="p-4 flex flex-col h-full">
+        <div className="relative flex-1 mb-4" style={{ minHeight: '200px', maxHeight: '300px' }}>
           <Image
             src={item.image}
             alt={item.name}
-            width={200}
-            height={200}
-            className="rounded-lg object-cover"
+            fill
+            className="rounded-lg object-contain"
           />
         </div>
-        <p className="text-center font-semibold">{item.name}</p>
-        <p className="text-center text-sm text-gray-500 mb-2">
-          ${item.price.toFixed(2)}
-        </p>
-        <p className="text-center text-xs text-gray-600">{item.description}</p>
+        <div className="text-center space-y-2">
+          <p className="font-semibold text-lg">{item.name}</p>
+          <p className="text-gray-500">${item.price.toFixed(2)}</p>
+          <p className="text-sm text-gray-600">{item.description}</p>
+        </div>
       </CardContent>
     </Card>
   );
@@ -322,54 +321,49 @@ export default function FashionApp() {
   );
 
   return (
-    <div className="container mx-auto p-2 pb-32">
-      <h1 className="text-4xl font-black mt-1 mb-1 text-center ">SwipeFit</h1>
-
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+    <div className="flex-1 flex flex-col mx-auto container pb-32 h-full max-h-screen">
+      <h1 className="text-4xl font-black my-4 text-center">SwipeFit</h1>
+  
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex-1">
         <TabsList className="hidden">
           <TabsTrigger value="browse">Browse</TabsTrigger>
           <TabsTrigger value="visualizer">Visualizer</TabsTrigger>
           <TabsTrigger value="saved">Saved</TabsTrigger>
         </TabsList>
-
-        <TabsContent value="browse">
-          <Card className="border-0 shadow-none w-full mx-auto">
+  
+        <TabsContent value="browse" className="flex flex-col flex-1">
+          <Card className="flex flex-col flex-1 border-0 shadow-none ">
+          <div className="bg-red-500 w-1/6"></div>
             <CardHeader className="text-center">
               <CardTitle>Choose your <span className='font-bold underline'>{CATEGORIES[currentCategory]}</span></CardTitle>
             </CardHeader>
-            <CardContent className="flex justify-center items-center p-4 relative mx-auto">
-                {currentItems.length > 0 && (
-                <TinderCard
-                  key={currentItems[0].id}
-                  ref={cardRef}
-                  onSwipe={handleSwipe}
-                  onSwipeRequirementFulfilled={handleSwipeRequirementFulfilled}
-                  onSwipeRequirementUnfulfilled={handleSwipeRequirementUnfulfilled}
-                  onCardLeftScreen={handleCardLeftScreen}
-                  preventSwipe={['up', 'down']}
-                  swipeRequirementType="position"
-                  swipeThreshold={100}
-                >
-                  {renderItemCard(currentItems[0])}
-                </TinderCard>
+            <CardContent className="flex-1 p-4 overflow-hidden">
+              {currentItems.length > 0 && (
+                <div className="h-full flex items-center justify-center">
+                  <div className="w-full max-w-md aspect-[3/4] relative max-h-[calc(100vh-300px)]">
+                    <TinderCard
+                      key={currentItems[0].id}
+                      ref={cardRef}
+                      onSwipe={handleSwipe}
+                      onSwipeRequirementFulfilled={handleSwipeRequirementFulfilled}
+                      onSwipeRequirementUnfulfilled={handleSwipeRequirementUnfulfilled}
+                      onCardLeftScreen={handleCardLeftScreen}
+                      preventSwipe={['up', 'down']}
+                      swipeRequirementType="position"
+                      swipeThreshold={100}
+                      className="absolute inset-0 pb-10 pr-4 pl-4"
+                    >
+                      {renderItemCard(currentItems[0])}
+                    </TinderCard>
+                  </div>
+                </div>
               )}
             </CardContent>
-            <CardFooter className="flex justify-center gap-4 mx-auto">
-              <Button 
-                onClick={() => cardRef.current?.swipe('left')} 
-                variant="outline"
-              >
-                <X className="mr-2 h-4 w-4 text-red-500" /> Skip
-              </Button>
-              <Button onClick={() => cardRef.current?.swipe('right')}>
-                <Check className="mr-2 h-4 w-4 text-green-500" /> Add to Outfit
-              </Button>
-            </CardFooter>
           </Card>
         </TabsContent>
 
         <TabsContent value="visualizer">
-          <Card className="border-0 shadow-none">
+          <Card className="border-0 shadow-none pb-32">
             <CardHeader>
               <CardTitle className="text-center">Outfit Visualizer</CardTitle>
             </CardHeader>
