@@ -23,13 +23,13 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { Search, Shirt, BookMarked, X, Check } from 'lucide-react';
-import './globals.css';
-
+import { Search, Shirt, BookMarked, Check, User, Flower2, Baby } from 'lucide-react';
 
 // Types
+type Gender = 'man' | 'woman' | 'child';
+type OutfitItems = { [key: string]: Item | null };
+type SavedOutfit = { name: string; items: OutfitItems };
+
 type Item = {
   id: string;
   name: string;
@@ -37,28 +37,28 @@ type Item = {
   image: string;
   price: number;
   description: string;
+  gender: Gender | Gender[];
+  affiliateUrl: string;
 };
-
-type OutfitItems = { [key: string]: Item | null };
-type SavedOutfit = { name: string; items: OutfitItems };
 
 // Constants
 const CATEGORIES = ['accessories', 'tops', 'bottoms', 'shoes'] as const;
 const LOCAL_STORAGE_KEY = 'fashionApp_savedOutfits';
 
 const MOCK_ITEMS: Item[] = [
-  { id: '1', name: 'White T-Shirt', category: 'tops', image: '/images/whiteshirt.jpeg', price: 19.99, description: 'Classic white tee.' },
-  { id: '2', name: 'Black T-Shirt', category: 'tops', image: '/images/blackshirt.jpeg', price: 19.99, description: 'Versatile black tee.' },
-  { id: '3', name: 'Blue Jeans', category: 'bottoms', image: '/images/bluejeans.png', price: 49.99, description: 'Comfortable jeans.' },
-  { id: '4', name: 'Black Jeans', category: 'bottoms', image: '/images/blackjeans.png', price: 49.99, description: 'Sleek black jeans.' },
-  { id: '5', name: 'Sneakers', category: 'shoes', image: '/images/shoes.jpeg', price: 79.99, description: 'Stylish sneakers.' },
-  { id: '6', name: 'Boots', category: 'shoes', image: '/images/boots.jpeg', price: 99.99, description: 'Durable boots.' },
-  { id: '7', name: 'Hat', category: 'accessories', image: '/images/hat.png', price: 24.99, description: 'Trendy hat.' },
-  { id: '8', name: 'Scarf', category: 'accessories', image: '/images/scarf.jpeg', price: 29.99, description: 'Soft scarf.' },
+  { id: '1', name: 'White T-Shirt', category: 'tops', image: '/images/whiteshirt.jpeg', price: 19.99, description: 'Classic white tee.', gender: ['man', 'woman', 'child'], affiliateUrl: 'https://amzn.to/3UGdm6A' },
+  { id: '2', name: 'Black T-Shirt', category: 'tops', image: '/images/blackshirt.jpeg', price: 19.99, description: 'Versatile black tee.', gender: ['man', 'woman', 'child'], affiliateUrl: 'https://amzn.to/3UGdm6A' },
+  { id: '3', name: 'Blue Jeans', category: 'bottoms', image: '/images/bluejeans.png', price: 49.99, description: 'Comfortable jeans.', gender: ['man', 'woman', 'child'], affiliateUrl: 'https://amzn.to/3UGdm6A' },
+  { id: '4', name: 'Black Jeans', category: 'bottoms', image: '/images/blackjeans.png', price: 49.99, description: 'Sleek black jeans.', gender: ['man', 'woman', 'child'], affiliateUrl: 'https://amzn.to/3UGdm6A' },
+  { id: '5', name: 'Sneakers', category: 'shoes', image: '/images/shoes.jpeg', price: 79.99, description: 'Stylish sneakers.', gender: ['man', 'woman', 'child'], affiliateUrl: 'https://amzn.to/3UGdm6A' },
+  { id: '6', name: 'Boots', category: 'shoes', image: '/images/boots.jpeg', price: 99.99, description: 'Durable boots.', gender: ['man', 'woman', 'child'], affiliateUrl: 'https://amzn.to/3UGdm6A' },
+  { id: '7', name: 'Hat', category: 'accessories', image: '/images/hat.png', price: 24.99, description: 'Trendy hat.', gender: ['man', 'woman', 'child'], affiliateUrl: 'https://amzn.to/3UGdm6A' },
+  { id: '8', name: 'Scarf', category: 'accessories', image: '/images/scarf.jpeg', price: 29.99, description: 'Soft scarf.', gender: ['man', 'woman', 'child'], affiliateUrl: 'https://amzn.to/3UGdm6A' },
 ];
 
 export default function FashionApp() {
   // State
+  const [selectedGender, setSelectedGender] = useState<Gender | null>(null);
   const [currentCategory, setCurrentCategory] = useState(0);
   const [currentItems, setCurrentItems] = useState<Item[]>([]);
   const [outfit, setOutfit] = useState<OutfitItems>({
@@ -70,7 +70,7 @@ export default function FashionApp() {
   const [savedOutfits, setSavedOutfits] = useState<SavedOutfit[]>([]);
   const [outfitName, setOutfitName] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('browse');
+  const [activeTab, setActiveTab] = useState('gender');
   const [fadingOut, setFadingOut] = useState(false);
   const [fadingIn, setFadingIn] = useState(false);
 
@@ -81,8 +81,10 @@ export default function FashionApp() {
   // Load saved outfits and reset items on category change
   useEffect(() => {
     loadSavedOutfits();
-    resetCurrentItems();
-  }, [currentCategory]);
+    if (selectedGender) {
+      resetCurrentItems();
+    }
+  }, [currentCategory, selectedGender]);
 
   // Helper Functions
   const loadSavedOutfits = () => {
@@ -93,43 +95,41 @@ export default function FashionApp() {
       }
     } catch (error) {
       console.error('Error loading saved outfits:', error);
-      toast.error('Failed to load saved outfits');
     }
   };
 
   const resetCurrentItems = () => {
     setCurrentItems(
-      MOCK_ITEMS.filter((item) => item.category === CATEGORIES[currentCategory])
+      MOCK_ITEMS.filter(
+        (item) =>
+          item.category === CATEGORIES[currentCategory] &&
+          (Array.isArray(item.gender) ? item.gender.includes(selectedGender!) : item.gender === selectedGender)
+      )
     );
   };
 
   const addToOutfit = (item: Item) => {
     setOutfit((prev) => ({ ...prev, [item.category]: item }));
-    toast.success(`Added ${item.name} to your outfit!`);
     moveToNextCategory();
   };
 
   const removeFromOutfit = (category: string) => {
     setOutfit((prev) => ({ ...prev, [category]: null }));
-    toast.info(`Removed ${category} from your outfit.`);
   };
 
   const moveToNextCategory = () => {
     if (currentCategory < CATEGORIES.length - 1) {
       setCurrentCategory((prev) => prev + 1);
     } else {
-      toast.info("You've completed your outfit!");
       setActiveTab('visualizer');
     }
   };
 
   const saveOutfit = () => {
     if (Object.values(outfit).every((item) => item === null)) {
-      toast.error('Please add at least one item to your outfit before saving.');
       return;
     }
     if (!outfitName.trim()) {
-      toast.error('Please enter a name for your outfit.');
       return;
     }
 
@@ -140,17 +140,14 @@ export default function FashionApp() {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newSavedOutfits));
       setOutfitName('');
       setIsDialogOpen(false);
-      toast.success('Outfit saved successfully!');
     } catch (error) {
       console.error('Error saving outfit:', error);
-      toast.error('Failed to save outfit');
     }
   };
 
   const loadOutfit = (savedOutfit: SavedOutfit) => {
     setOutfit(savedOutfit.items);
     setActiveTab('visualizer');
-    toast.info(`Loaded outfit: ${savedOutfit.name}`);
   };
 
   const deleteOutfit = (index: number) => {
@@ -158,10 +155,8 @@ export default function FashionApp() {
       const newSavedOutfits = savedOutfits.filter((_, i) => i !== index);
       setSavedOutfits(newSavedOutfits);
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newSavedOutfits));
-      toast.success('Outfit deleted successfully!');
     } catch (error) {
       console.error('Error deleting outfit:', error);
-      toast.error('Failed to delete outfit');
     }
   };
 
@@ -187,8 +182,8 @@ export default function FashionApp() {
       setFadingOut(false);
       setFadingIn(true);
   
-      setTimeout(() => setFadingIn(false), 300); // Wait 300ms for fade-in
-    }, 300); // Wait for fade-out
+      setTimeout(() => setFadingIn(false), 300);
+    }, 300);
   };
   
   const handleSwipeRequirementFulfilled = (direction: string) => {
@@ -262,7 +257,6 @@ export default function FashionApp() {
       </div>
     </div>
   );
-  
 
   const renderItemCard = (item: Item) => (
     <Card
@@ -286,7 +280,6 @@ export default function FashionApp() {
         <div className="text-center space-y-2 mb-0">
           <p className="font-semibold text-lg">{item.name}</p>
           <p className="text-gray-500">€{item.price.toFixed(2)}</p>
-          
         </div>
       </CardContent>
     </Card>
@@ -303,14 +296,22 @@ export default function FashionApp() {
             objectFit="contain"
             className="rounded-lg"
           />
-          <Button
-            variant="destructive"
-            size="sm"
-            className="absolute bottom-4 left-1/2 transform -translate-x-1/2"
-            onClick={() => removeFromOutfit(category)}
-          >
-            Remove
-          </Button>
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => removeFromOutfit(category)}
+            >
+              Remove
+            </Button>
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => window.open(outfit[category]?.affiliateUrl, '_blank')}
+            >
+              Buy
+            </Button>
+          </div>
         </>
       ) : (
         <div className="w-full h-full border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-500">
@@ -320,17 +321,47 @@ export default function FashionApp() {
     </div>
   );
 
+  const handleGenderSelection = (gender: Gender) => {
+    setSelectedGender(gender);
+    setActiveTab('browse');
+    setCurrentCategory(0);
+  };
+
   return (
     <div className="flex-1 flex flex-col mx-auto container h-full max-h-screen">
       <h1 className="text-4xl font-black text-center">SwipeFit</h1>
   
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex-1">
         <TabsList className="hidden">
+          <TabsTrigger value="gender">Gender</TabsTrigger>
           <TabsTrigger value="browse">Browse</TabsTrigger>
           <TabsTrigger value="visualizer">Visualizer</TabsTrigger>
           <TabsTrigger value="saved">Saved</TabsTrigger>
         </TabsList>
   
+        <TabsContent value="gender">
+          <CardTitle className="flex flex-col items-center p-4">Select Your Gender</CardTitle>
+          <div className="flex flex-col gap-8 items-center mt-4">
+            {['man', 'woman', 'child'].map((gender) => {
+              // Scegli l'icona giusta in base al genere
+              const IconComponent = gender === 'man' ? User : gender === 'woman' ? Flower2 : Baby;
+              return (
+                <Card 
+                  key={gender} 
+                  onClick={() => handleGenderSelection(gender)} 
+                  className="flex flex-col items-center p-4 w-44 h-full border shadow-md rounded-lg cursor-pointer hover:shadow-lg transition-shadow"
+                >
+                  <div className="mb-2">
+                    {/* Icona Lucide React */}
+                    <IconComponent className="w-10 h-10 mt-4 mb-4" />
+                  </div>
+                  <span className="text-center capitalize font-medium">{gender}</span>
+                </Card>
+              );
+            })}
+          </div>
+        </TabsContent>
+
         <TabsContent value="browse" className="flex flex-col flex-1">
           <Card className="flex flex-col flex-1 border-0 shadow-none overflow-visible">
             <CardHeader className="text-center">
@@ -478,8 +509,6 @@ export default function FashionApp() {
           </div>
         </div>
       </div>
-
-      <ToastContainer position="bottom-right" autoClose={1500} closeOnClick/>
     </div>
   );
 }
