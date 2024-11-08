@@ -342,7 +342,7 @@ export default function FashionApp() {
         <TabsContent value="gender">
           <CardTitle className="flex flex-col items-center p-4">Select Your Gender</CardTitle>
           <div className="flex flex-col gap-8 items-center mt-4">
-            {['man', 'woman', 'child'].map((gender) => {
+            {(['man', 'woman', 'child'] as Gender[]).map((gender) => {
               // Scegli l'icona giusta in base al genere
               const IconComponent = gender === 'man' ? User : gender === 'woman' ? Flower2 : Baby;
               return (
