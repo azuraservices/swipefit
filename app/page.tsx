@@ -314,7 +314,7 @@ export default function FashionApp() {
           </div>
         </>
       ) : (
-        <div className="w-full h-full border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-500">
+        <div className="w-full h-full border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-500 rounded-[1.6rem]">
           No {category} selected
         </div>
       )}
