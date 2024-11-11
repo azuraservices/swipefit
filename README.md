@@ -4,6 +4,10 @@
 
 **SwipeFit** is a Next.js and React-based fashion app designed to help users create and save outfits by swiping through clothing items across different categories. The app provides a visually engaging, Tinder-like swipe interface to choose clothing pieces by gender and category, allowing users to put together outfits with ease. Users can save their curated outfits, view them in a visualizer, and access saved outfits for future reference. The app uses local storage to retain saved outfits between sessions.
 
+## Demo
+
+<img src="public/swipefitdemo.gif" alt="Demo" width="281" height="500">
+
 ## Features
 
 - **Swipe to Select**: Swipe through different clothing items in each category (accessories, tops, bottoms, and shoes) and select items to create a complete outfit.
