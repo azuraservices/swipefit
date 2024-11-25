@@ -329,7 +329,7 @@ export default function FashionApp() {
 
   return (
     <div className="flex-1 flex flex-col mx-auto container h-full max-h-screen">
-      <h1 className="text-4xl font-black text-center">SwipeFit</h1>
+      <h1 className="text-4xl font-black text-center mt-2">SwipeFit</h1>
   
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex-1">
         <TabsList className="hidden">
@@ -341,7 +341,7 @@ export default function FashionApp() {
   
         <TabsContent value="gender">
           <CardTitle className="flex flex-col items-center p-4">Select Your Gender</CardTitle>
-          <div className="flex flex-col gap-8 items-center mt-4">
+          <div className="flex flex-col gap-8 items-center mt-3">
             {(['man', 'woman', 'child'] as Gender[]).map((gender) => {
               // Scegli l'icona giusta in base al genere
               const IconComponent = gender === 'man' ? User : gender === 'woman' ? Flower2 : Baby;
